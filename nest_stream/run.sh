@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 # Startup script for Nest Doorbell streaming
 
 CONFIG_FILE="/data/options.json"
+
+echo "✅ Starting Nest Doorbell streaming..."
 
 # === READ CONFIGURATION FROM options.json ===
 CLIENT_ID=$(jq -r '.client_id' "$CONFIG_FILE")
@@ -10,11 +12,6 @@ REFRESH_TOKEN=$(jq -r '.refresh_token' "$CONFIG_FILE")
 PROJECT_ID=$(jq -r '.project_id' "$CONFIG_FILE")
 DEVICE_ID=$(jq -r '.device_id' "$CONFIG_FILE")
 STREAM_PORT=$(jq -r '.stream_port' "$CONFIG_FILE")
-
-# Wait for Home Assistant to fully start the add-on
-sleep 5
-
-echo "✅ Starting Nest Doorbell streaming..."
 
 # Function to obtain the OAuth access token
 get_access_token() {
@@ -48,34 +45,11 @@ get_rtsp_url() {
     echo "🎥 RTSP URL obtained successfully!"
 }
 
-# Function to start FFmpeg and keep it running in foreground (PID 1 safe)
+# Start FFmpeg to convert RTSP to HTTP stream
 start_ffmpeg() {
     echo "🎬 Starting FFmpeg stream..."
-    
-    # Start FFmpeg as the foreground process (S6-friendly)
     exec ffmpeg -rtsp_transport tcp -i "$RTSP_URL" \
         -c:v copy -c:a aac -f mpegts -listen 1 "http://0.0.0.0:$STREAM_PORT/live.ts"
-}
-
-# Function to monitor the RTSP stream and refresh it before expiration
-monitor_stream() {
-    while true; do
-        sleep 30
-        CURRENT_TIMESTAMP=$(date +%s)
-        EXPIRES_AT_CLEAN=$(echo "$EXPIRES_AT" | sed -E 's/\.[0-9]+Z//')
-        EXPIRES_TIMESTAMP=$(date -u -d "$EXPIRES_AT_CLEAN" +%s)
-
-        REMAINING_TIME=$((EXPIRES_TIMESTAMP - CURRENT_TIMESTAMP))
-
-        echo "🔍 Remaining time: $REMAINING_TIME seconds"
-
-        if [[ $REMAINING_TIME -lt 60 ]]; then
-            echo "⚠️ Stream is about to expire, regenerating..."
-            killall -9 ffmpeg
-            get_rtsp_url
-            start_ffmpeg
-        fi
-    done
 }
 
 # Execute functions
