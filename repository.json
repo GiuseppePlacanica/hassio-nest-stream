@@ -1,7 +1,7 @@
 {
   "name": "Nest Stream Add-on",
-  "url": "https://github.com/TUO_USERNAME/hassio-nest-stream",
-  "maintainer": "Tuo Nome <tuo@email.com>",
+  "url": "https://github.com/GiuseppePlacanica/hassio-nest-stream",
+  "maintainer": "Tuo Nome <giuseppe.placanica@gmail.com>",
   "addons": [
     {
       "name": "Nest Stream",
@@ -9,7 +9,7 @@
       "version": "1.0.0",
       "stage": "stable",
       "description": "Streams Nest Doorbell RTSP to Home Assistant",
-      "url": "https://github.com/TUO_USERNAME/hassio-nest-stream/tree/main/nest_stream",
+      "url": "https://github.com/GiuseppePlacanica/hassio-nest-stream/tree/main/nest_stream",
       "arch": ["armhf", "armv7", "aarch64", "i386", "amd64"],
       "startup": "system",
       "boot": "auto",
