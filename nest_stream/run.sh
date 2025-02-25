@@ -48,12 +48,13 @@ get_rtsp_url() {
     echo "🎥 RTSP URL obtained successfully!"
 }
 
-# Start FFmpeg to convert RTSP to HTTP stream
+# Function to start FFmpeg and keep it running in foreground (PID 1 safe)
 start_ffmpeg() {
     echo "🎬 Starting FFmpeg stream..."
-    ffmpeg -rtsp_transport tcp -i "$RTSP_URL" \
-        -c:v copy -c:a aac -f mpegts -listen 1 "http://0.0.0.0:$STREAM_PORT/live.ts" &
-    FFMPEG_PID=$!
+    
+    # Start FFmpeg as the foreground process (S6-friendly)
+    exec ffmpeg -rtsp_transport tcp -i "$RTSP_URL" \
+        -c:v copy -c:a aac -f mpegts -listen 1 "http://0.0.0.0:$STREAM_PORT/live.ts"
 }
 
 # Function to monitor the RTSP stream and refresh it before expiration
@@ -70,7 +71,7 @@ monitor_stream() {
 
         if [[ $REMAINING_TIME -lt 60 ]]; then
             echo "⚠️ Stream is about to expire, regenerating..."
-            kill $FFMPEG_PID
+            killall -9 ffmpeg
             get_rtsp_url
             start_ffmpeg
         fi
@@ -81,4 +82,3 @@ monitor_stream() {
 get_access_token
 get_rtsp_url
 start_ffmpeg
-monitor_stream
