@@ -62,7 +62,7 @@ monitor_stream() {
         sleep 30
         CURRENT_TIMESTAMP=$(date +%s)
         EXPIRES_AT_CLEAN=$(echo "$EXPIRES_AT" | sed -E 's/\.[0-9]+Z//')
-        EXPIRES_TIMESTAMP=$(date -j -u -f "%Y-%m-%dT%H:%M:%S" "$EXPIRES_AT_CLEAN" "+%s" 2>/dev/null)
+        EXPIRES_TIMESTAMP=$(($(date -j -u -f "%Y-%m-%dT%H:%M:%S" "$EXPIRES_AT_CLEAN" "+%s" 2>/dev/null) + 3600))
 
         REMAINING_TIME=$((EXPIRES_TIMESTAMP - CURRENT_TIMESTAMP))
 
