@@ -1,14 +1,15 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:14.0.1
 FROM $BUILD_FROM
 
-# Setta i parametri base dell'add-on
+# Imposta la configurazione di ambiente
 ENV LANG C.UTF-8
 
 # Installa i pacchetti necessari
-RUN apk add --no-cache ffmpeg jq curl
+RUN apk add --no-cache ffmpeg jq curl bash
 
 # Copia lo script di avvio
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
+COPY run.sh /etc/services.d/nest_stream/run
+RUN chmod +x /etc/services.d/nest_stream/run
 
-CMD [ "/run.sh" ]
+# Avvia il supervisore S6 (richiesto per Hassio)
+CMD [ "/init" ]
