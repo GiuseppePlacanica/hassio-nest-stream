@@ -62,13 +62,13 @@ monitor_stream() {
         sleep 30
         CURRENT_TIMESTAMP=$(date +%s)
         EXPIRES_AT_CLEAN=$(echo "$EXPIRES_AT" | sed -E 's/\.[0-9]+Z//')
-        EXPIRES_TIMESTAMP=$(date -u -d "$EXPIRES_AT_CLEAN" +%s)
+        EXPIRES_TIMESTAMP=$(date -j -u -f "%Y-%m-%dT%H:%M:%S" "$EXPIRES_AT_CLEAN" "+%s" 2>/dev/null)
 
         REMAINING_TIME=$((EXPIRES_TIMESTAMP - CURRENT_TIMESTAMP))
 
         echo "🔍 Remaining time: $REMAINING_TIME seconds"
 
-        if [[ $REMAINING_TIME -lt 60 ]]; then
+        if [[ $REMAINING_TIME -lt 30 ]]; then
             echo "⚠️ Stream is about to expire, regenerating..."
             kill $FFMPEG_PID
             get_rtsp_url
