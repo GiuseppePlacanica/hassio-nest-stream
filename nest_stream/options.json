@@ -1,0 +1,8 @@
+{
+  "client_id": "IL_TUO_CLIENT_ID",
+  "client_secret": "IL_TUO_CLIENT_SECRET",
+  "refresh_token": "IL_TUO_REFRESH_TOKEN",
+  "project_id": "IL_TUO_PROJECT_ID",
+  "device_id": "IL_TUO_DEVICE_ID",
+  "stream_port": 8081
+}
