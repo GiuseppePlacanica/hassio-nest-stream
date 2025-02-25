@@ -38,7 +38,6 @@ get_rtsp_url() {
       -d '{"command": "sdm.devices.commands.CameraLiveStream.GenerateRtspStream", "params": {}}')
 
     RTSP_URL=$(echo "$RTSP_RESPONSE" | jq -r '.results.streamUrls.rtspUrl')
-    EXPIRES_AT=$(echo "$RTSP_RESPONSE" | jq -r '.results.expiresAt')
 
     if [[ -z "$RTSP_URL" || "$RTSP_URL" == "null" ]]; then
         echo "❌ ERROR: No RTSP URL received from Google API!"
@@ -48,32 +47,22 @@ get_rtsp_url() {
     echo "🎥 RTSP URL obtained successfully!"
 }
 
-# Start FFmpeg to convert RTSP to HTTP stream
+# Start FFmpeg to convert RTSP to RTSP stream
 start_ffmpeg() {
     echo "🎬 Starting FFmpeg stream..."
     ffmpeg -rtsp_transport tcp -i "$RTSP_URL" \
-        -c:v copy -c:a aac -f mpegts -listen 1 "http://0.0.0.0:$STREAM_PORT/live.ts" &
+        -c copy -f rtsp rtsp://0.0.0.0:$STREAM_PORT/live.sdp &
     FFMPEG_PID=$!
 }
 
-# Function to monitor the RTSP stream and refresh it before expiration
+# Function to periodically refresh the RTSP stream
 monitor_stream() {
     while true; do
-        sleep 30
-        CURRENT_TIMESTAMP=$(date +%s)
-        EXPIRES_AT_CLEAN=$(echo "$EXPIRES_AT" | sed -E 's/\.[0-9]+Z//')
-        EXPIRES_TIMESTAMP=$(($(date -j -u -f "%Y-%m-%dT%H:%M:%S" "$EXPIRES_AT_CLEAN" "+%s" 2>/dev/null) + 3600))
-
-        REMAINING_TIME=$((EXPIRES_TIMESTAMP - CURRENT_TIMESTAMP))
-
-        echo "🔍 Remaining time: $REMAINING_TIME seconds"
-
-        if [[ $REMAINING_TIME -lt 30 ]]; then
-            echo "⚠️ Stream is about to expire, regenerating..."
-            kill $FFMPEG_PID
-            get_rtsp_url
-            start_ffmpeg
-        fi
+        sleep 280  # Sleep for 4 minutes and 40 seconds before refreshing
+        echo "⚠️ Stream is about to expire, regenerating..."
+        kill $FFMPEG_PID
+        get_rtsp_url
+        start_ffmpeg
     done
 }
 
