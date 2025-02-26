@@ -10,13 +10,13 @@ RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposi
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     apk update
 
-# Install all required dependencies
+# Install all required dependencies (Fix: No broken formatting!)
 RUN apk add --no-cache \
     git \
     build-base \
     python3 \
     py3-pip \
-    py3-requests \  # <-- INSTALLA REQUESTS DA APK
+    py3-requests \
     gstreamer \
     gst-plugins-base \
     gst-plugins-good \
