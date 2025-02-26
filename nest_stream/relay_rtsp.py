@@ -3,6 +3,8 @@ import gi
 import time
 import argparse
 from gi.repository import Gst, GstRtspServer, GLib
+import time
+time.sleep(5)  #
 
 # Initialize GStreamer
 gi.require_version('Gst', '1.0')
@@ -24,7 +26,7 @@ class RTSPRelayServer:
         self.server.set_service(str(self.port))
 
         factory = GstRtspServer.RTSPMediaFactory()
-        factory.set_launch(f"( rtspsrc location={self.rtsp_url} latency=100 ! rtph264depay ! rtph264pay name=pay0 pt=96 )")
+        factory.set_launch(f"( rtspsrc location={self.rtsp_url} latency=500 ! decodebin ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=ultrafast ! rtph264pay name=pay0 pt=96 )")
         factory.set_shared(True)
 
         self.server.get_mount_points().add_factory("/live", factory)
