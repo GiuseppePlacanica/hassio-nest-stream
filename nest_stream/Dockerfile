@@ -16,6 +16,7 @@ RUN apk add --no-cache \
     build-base \
     python3 \
     py3-pip \
+    py3-requests \  # <-- INSTALLA REQUESTS DA APK
     gstreamer \
     gst-plugins-base \
     gst-plugins-good \
@@ -31,9 +32,6 @@ RUN apk add --no-cache \
     flex \
     bison \
     jq
-
-# Install Python dependencies
-RUN pip install requests
 
 # Copy add-on files
 COPY relay_rtsp.py /app/relay_rtsp.py
