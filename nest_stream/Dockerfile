@@ -5,7 +5,12 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 ENV PYTHONUNBUFFERED 1
 
-# Install dependencies
+# Enable Alpine Edge Repositories
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    apk update
+
+# Install all required dependencies
 RUN apk add --no-cache \
     git \
     build-base \
@@ -14,17 +19,18 @@ RUN apk add --no-cache \
     gstreamer \
     gst-plugins-base \
     gst-plugins-good \
-    meson \
-    ninja \
+    gst-plugins-bad \
+    gst-plugins-ugly \
+    gst-rtsp-server \
+    gstreamer-dev \
+    glib-dev \
+    gobject-introspection-dev \
+    libffi-dev \
+    gettext-dev \
+    zlib-dev \
+    flex \
+    bison \
     jq
-
-# Clone and compile gst-rtsp-server
-RUN git clone https://gitlab.freedesktop.org/gstreamer/gst-rtsp-server.git /tmp/gst-rtsp-server && \
-    cd /tmp/gst-rtsp-server && \
-    meson setup build && \
-    ninja -C build && \
-    ninja -C build install && \
-    rm -rf /tmp/gst-rtsp-server
 
 # Install Python dependencies
 RUN pip install requests
