@@ -5,15 +5,25 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 ENV PYTHONUNBUFFERED 1
 
-# Install only essential dependencies
+# Install dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     gstreamer \
     gst-plugins-base \
     gst-plugins-good \
-    gst-rtsp-server \
+    gstreamer-dev \
+    meson \
+    ninja \
     jq
+
+# Compile and install gst-rtsp-server
+RUN git clone https://gitlab.freedesktop.org/gstreamer/gst-rtsp-server.git /tmp/gst-rtsp-server && \
+    cd /tmp/gst-rtsp-server && \
+    meson build && \
+    ninja -C build && \
+    ninja -C build install && \
+    rm -rf /tmp/gst-rtsp-server
 
 # Install Python dependencies
 RUN pip install requests
