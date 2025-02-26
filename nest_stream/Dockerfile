@@ -1,14 +1,29 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:14.0.1
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:12.0.0
 FROM $BUILD_FROM
 
+# Set environment variables
 ENV LANG C.UTF-8
+ENV PYTHONUNBUFFERED 1
 
 # Install dependencies
-RUN apk add --no-cache ffmpeg jq curl bash
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    gstreamer \
+    gst-plugins-base \
+    gst-plugins-good \
+    gst-rtsp-server \
+    jq
 
-# Copy the script
+# Install Python dependencies
+RUN pip install requests
+
+# Copy add-on files
+COPY relay_rtsp.py /app/relay_rtsp.py
 COPY run.sh /usr/bin/run.sh
-RUN chmod +x /usr/bin/run.sh
 
-# Run the script at startup
-CMD [ "/usr/bin/run.sh" ]
+# Set permissions and entrypoint
+RUN chmod +x /usr/bin/run.sh
+WORKDIR /app
+
+CMD ["/usr/bin/run.sh"]
