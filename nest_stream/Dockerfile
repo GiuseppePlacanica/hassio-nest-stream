@@ -5,17 +5,14 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 ENV PYTHONUNBUFFERED 1
 
-# Install dependencies
+# Install only essential dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
+    gstreamer \
     gst-plugins-base \
     gst-plugins-good \
-    gst-plugins-bad \
-    gst-plugins-ugly \
-    gst-libav \
     gst-rtsp-server \
-    gcompat \
     jq
 
 # Install Python dependencies
