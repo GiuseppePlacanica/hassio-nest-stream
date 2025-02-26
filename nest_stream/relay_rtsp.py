@@ -1,5 +1,5 @@
 import gi
-import os
+import argparse
 import time
 
 print("🔹 Avvio del server RTSP...")  # Log di debug
@@ -8,9 +8,11 @@ gi.require_version('Gst', '1.0')
 gi.require_version('GstRtspServer', '1.0')
 from gi.repository import Gst, GstRtspServer, GLib
 
-# Recupera le variabili d'ambiente passate da `run.sh`
-RTSP_URL = os.getenv("RTSP_URL", "rtsp://DEFAULT_URL")
-PORT = int(os.getenv("STREAM_PORT", 8554))  # Default porta 8554
+# Parsing degli argomenti
+parser = argparse.ArgumentParser(description="RTSP Relay Server")
+parser.add_argument("--rtsp_url", required=True, help="RTSP Source URL")
+parser.add_argument("--stream_port", type=int, required=True, help="Local RTSP Port")
+args = parser.parse_args()
 
 class RTSPRelayServer:
     def __init__(self, rtsp_url, port):
@@ -37,6 +39,6 @@ class RTSPRelayServer:
 # Avvia il server
 if __name__ == "__main__":
     time.sleep(2)  # Ritardo per evitare problemi di inizializzazione
-    print("🔹 Tentativo di avvio del server con URL:", RTSP_URL)
-    relay_server = RTSPRelayServer(RTSP_URL, PORT)
+    print(f"🔹 Tentativo di avvio del server con URL: {args.rtsp_url} e porta {args.stream_port}")
+    relay_server = RTSPRelayServer(args.rtsp_url, args.stream_port)
     relay_server.run()
