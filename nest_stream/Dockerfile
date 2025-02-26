@@ -8,6 +8,7 @@ ENV PYTHONUNBUFFERED 1
 # Install dependencies
 RUN apk add --no-cache \
     git \
+    build-base \  # <--- Aggiunto per fornire GCC e strumenti di compilazione
     python3 \
     py3-pip \
     gstreamer \
