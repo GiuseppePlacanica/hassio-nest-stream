@@ -16,7 +16,7 @@
     "refresh_token": "YOUR_REFRESH_TOKEN",
     "project_id": "YOUR_PROJECT_ID",
     "device_id": "YOUR_DEVICE_ID",
-    "stream_port": 8081
+    "stream_port": 8554
   },
   "schema": {
     "client_id": "str",
