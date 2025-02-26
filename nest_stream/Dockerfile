@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install dependencies
 RUN apk add --no-cache \
+    git \
     python3 \
     py3-pip \
     gstreamer \
