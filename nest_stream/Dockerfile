@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:12.0.0
+ARG BUILD_FROM=ghcr.io/home-assistant/aarch64-base:latest
 FROM $BUILD_FROM
 
 # Set environment variables
@@ -8,21 +8,20 @@ ENV PYTHONUNBUFFERED 1
 # Install dependencies
 RUN apk add --no-cache \
     git \
-    build-base \  # <--- Aggiunto per fornire GCC e strumenti di compilazione
+    build-base \
     python3 \
     py3-pip \
     gstreamer \
     gst-plugins-base \
     gst-plugins-good \
-    gstreamer-dev \
     meson \
     ninja \
     jq
 
-# Compile and install gst-rtsp-server
+# Clone and compile gst-rtsp-server
 RUN git clone https://gitlab.freedesktop.org/gstreamer/gst-rtsp-server.git /tmp/gst-rtsp-server && \
     cd /tmp/gst-rtsp-server && \
-    meson build && \
+    meson setup build && \
     ninja -C build && \
     ninja -C build install && \
     rm -rf /tmp/gst-rtsp-server
