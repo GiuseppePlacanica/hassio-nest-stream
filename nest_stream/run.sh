@@ -9,7 +9,7 @@ PROJECT_ID=$(jq --raw-output '.project_id' $CONFIG_PATH)
 DEVICE_ID=$(jq --raw-output '.device_id' $CONFIG_PATH)
 STREAM_PORT=$(jq --raw-output '.stream_port' $CONFIG_PATH)
 
-# Function to obtain a new RTSP URL
+# Funzione per ottenere un nuovo URL RTSP
 generate_rtsp_url() {
     echo "🔄 Generating new RTSP URL..."
     ACCESS_TOKEN=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
@@ -29,13 +29,13 @@ generate_rtsp_url() {
     echo "✅ New RTSP URL: $RTSP_URL (Expires at: $EXPIRES_AT)"
 }
 
-# Start the Python RTSP relay server
+# Avvia il server RTSP con il primo URL
 generate_rtsp_url
 python3 /app/relay_rtsp.py --rtsp_url "$RTSP_URL" --stream_port "$STREAM_PORT" &
 
-# Monitor and refresh RTSP URL before expiration
+# Monitor e rinnovo dell'URL prima della scadenza
 while true; do
-    sleep 270  # Check every 30 minutes
+    sleep 270  # Controlla ogni 30 minuti
     echo "⚠️ Generating a new URL..."
     generate_rtsp_url
     pkill -f relay_rtsp.py
